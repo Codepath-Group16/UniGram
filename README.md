@@ -41,32 +41,28 @@ interested and prospective applicants.
 
 * Login 
 * Register - User signs up or logs into their account
-   * Upon Download/Reopening of the application, the user is prompted to log in to gain access to their profile information to be properly matched with another person. 
+   * Users will have different viewing priviliges and thye will be provided necessary access depending on how they register. 
    * ...
-* Messaging Screen - Chat for users to communicate (direct 1-on-1)
-   * Upon selecting music choice users matched and message screen opens
+* Home Screen - this will contain  pictures of the schools the user is following, or the on they have searched 
 * Profile Screen 
    * Allows user to upload a photo and fill in information that is interesting to them and others
-* Song Selection Screen.
-   * Allows user to be able to choose their desired song, artist, genre of preference and begin listening and interacting with others.
 * Settings Screen
    * Lets people change language, and app notification settings.
 
 ### 3. Navigation
 
 **Tab Navigation** (Tab to Screen)
-
-* Music selection
+* Home
+* Search 
 * Profile
-* Settings
 
 Optional:
-* Music/Encounter Queue
-* Discover (Top Choices)
+
+* Chat screen
 
 **Flow Navigation** (Screen to Screen)
 * Forced Log-in -> Account creation if no log in is available
-* Music Selection (Or Queue if Optional) -> Jumps to Chat
+* Random college pictures if the user follows no school 
 * Profile -> Text field to be modified. 
 * Settings -> Toggle settings
 
