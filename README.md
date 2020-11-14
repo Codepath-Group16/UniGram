@@ -80,12 +80,12 @@ Optional:
 
 ### WireFrames
 
-<img src="https://i.imgur.com/9CrjH1K.jpg" width=800><br>
+![WireFrame image](./wire_frame.jpg)
 
 #### [BONUS] Digital WireFrames & Mockups
 
-<img src="https://i.imgur.com/lYHn37F.jpg" height=200>
+![Digital WireFrame image](./digital_wire_frame.png)
 
 #### [BONUS] Interactive Prototype
 
-<img src="https://i.imgur.com/AiKfE5g.gif" width=200>
+[Figma Prototype](https://www.figma.com/proto/6mE6wzLmnza2c3u9735k1M/UniInsta?node-id=14%3A1&scaling=min-zoom)
