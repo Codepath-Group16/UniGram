@@ -28,6 +28,7 @@ interested and prospective applicants.
 * User logs in to access previous pictures and profile 
 * User can choose their favorite school. Use can select the school to see 
 * User can follow and unfollow a school depending on their preference
+* Specific users(current students and admin) can take a photo 
 * Profile pages for each user
 * Settings (Accesibility, Notification, General, etc.)
 
@@ -44,6 +45,7 @@ interested and prospective applicants.
    * Users will have different viewing priviliges and thye will be provided necessary access depending on how they register. 
    * ...
 * Home Screen - this will contain  pictures of the schools the user is following, or the on they have searched 
+* Photo capture screen(only available to some users with spefic privileges)
 * Profile Screen 
    * Allows user to upload a photo and fill in information that is interesting to them and others
 * Settings Screen
@@ -53,6 +55,7 @@ interested and prospective applicants.
 
 **Tab Navigation** (Tab to Screen)
 * Home
+* Photo <available to certain users with specific privileges>
 * Search 
 * Profile
 
