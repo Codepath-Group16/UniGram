@@ -89,3 +89,43 @@ Optional:
 #### [BONUS] Interactive Prototype
 
 [Figma Prototype](https://www.figma.com/proto/6mE6wzLmnza2c3u9735k1M/UniInsta?node-id=14%3A1&scaling=min-zoom)
+## Schema 
+### Models
+#### Post
+
+   | Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | objectId      | String   | unique id for the user's post |
+   | author        | Pointer to User| post/image author |
+   | image         | File     | image that user posts |
+   | caption       | String   | post caption by author |
+   | commentsCount | Number   | number of comments that has been posted to post |
+   | likesCount    | Number   | number of likes for the post |
+   | createdAt     | DateTime | date when post is created (default field) |
+   | updatedAt     | DateTime | date when post is last updated (default field) |
+   | deletedAt     | DateTime | date when post is deleted (default field) |
+   
+   #### Comments
+   | Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | comment       | String   | post comment by viewer |
+   | commentId     | String   | unique id for the each comment |
+   | commenter     | Pointer to Viewer| comment author |
+   | commentLikesCount    | Number   | number of likes for the comment |
+   | repliesCount | Number   | number of replies that has been posted to a comment |
+   | ccreatedAt     | DateTime | time when comment is created (default field) |
+   | updatedAt     | DateTime | time when comment is last updated (default field) |
+   | deletedAt     | DateTime | time when comment is deleted (default field) |
+
+   #### Users
+   | Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | adminId      | String   | unique id for the school |
+   | userId       | String   | unique id for a user |
+
+
+   
+   
+
+
+### Networking
