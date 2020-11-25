@@ -113,7 +113,7 @@ Optional:
    | commenter     | Pointer to Viewer| comment author |
    | commentLikesCount    | Number   | number of likes for the comment |
    | repliesCount | Number   | number of replies that has been posted to a comment |
-   | ccreatedAt     | DateTime | time when comment is created (default field) |
+   | createdAt     | DateTime | time when comment is created (default field) |
    | updatedAt     | DateTime | time when comment is last updated (default field) |
    | deletedAt     | DateTime | time when comment is deleted (default field) |
 
