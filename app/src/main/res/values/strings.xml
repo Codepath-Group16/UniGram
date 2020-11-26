@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">UniGram</string>
-    <string name="feed">Feed</string>
-    <string name="explore">Explore</string>
-    <string name="post">Post</string>
-    <string name="profile">Profile</string>
+    <string name="title_feed">Feed</string>
+    <string name="title_explore">Explore</string>
+    <string name="title_post">Post</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
