@@ -75,6 +75,11 @@ public class PostViewModel extends AndroidViewModel {
         ArrayList<MediaStoreImage> images = new ArrayList<>();
 
         /*
+         * Add the open the camera item as the first item
+         */
+        images.add(new MediaCameraItem());
+
+        /*
          * A key concept when working with Android {@link ContentProvider}s is something called
          * "projections". A projection is the list of columns to request from the provider,
          * and can be thought of (quite accurately) as the "SELECT ..." clause of a SQL

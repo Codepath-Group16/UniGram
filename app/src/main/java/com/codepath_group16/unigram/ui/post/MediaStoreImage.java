@@ -18,6 +18,7 @@ package com.codepath_group16.unigram.ui.post;
  * limitations under the License.
  */
 
+import android.media.browse.MediaBrowser;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -71,5 +72,25 @@ class MediaStoreImage {
         MediaStoreImage image = (MediaStoreImage) obj;
 
         return this.id == image.id && this.displayName.equals(image.displayName) && this.contentUri.equals(image.contentUri);
+    }
+}
+
+class MediaCameraItem extends MediaStoreImage {
+
+    public MediaCameraItem() {
+        super(-1, null, null, null);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+
+        if (getClass() != obj.getClass())
+            return false;
+
+        MediaCameraItem new_photo = (MediaCameraItem) obj;
+
+        return this.id == new_photo.id;
     }
 }

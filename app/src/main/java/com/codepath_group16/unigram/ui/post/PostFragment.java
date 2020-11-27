@@ -1,6 +1,7 @@
 package com.codepath_group16.unigram.ui.post;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -161,30 +163,57 @@ public class PostFragment extends Fragment {
     /**
      * A {@link ListAdapter for {@link MediaStoreImage}s.
      */
-    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, ImageViewHolder> {
+    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, RecyclerView.ViewHolder> {
+
+        final int IMAGE_VIEW_TYPE = 0;
+        final int OPEN_CAMERA_VIEW_TYPE = 1;
 
         protected GalleryAdapter() {
             super(MediaStoreImage.DiffCallback);
         }
 
+        @Override
+        public int getItemViewType(int position) {
+            if (MediaCameraItem.class.equals(getItem(position).getClass())) {
+                return OPEN_CAMERA_VIEW_TYPE;
+            }
+            return IMAGE_VIEW_TYPE;
+        }
+
         @NonNull
         @Override
-        public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-            return new ImageViewHolder(view);
+            switch (viewType) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    View openCameraView = layoutInflater.inflate(R.layout.gallery_open_camera_layout, parent, false);
+                    return new NewImageViewHolder(openCameraView, parent.getContext());
+                case IMAGE_VIEW_TYPE:
+                default:
+                    View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
+                    return new ImageViewHolder(view);
+            }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-            MediaStoreImage mediaStoreImage = getItem(position);
-            holder.getRootView().setTag(mediaStoreImage);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-            Glide.with(holder.getImageView())
-                    .load(mediaStoreImage.contentUri)
-                    .thumbnail(0.33f)
-                    .centerCrop()
-                    .into(holder.getImageView());
+            switch (holder.getItemViewType()) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    break;
+                case IMAGE_VIEW_TYPE:
+                default:
+                    MediaStoreImage mediaStoreImage = getItem(position);
+                    ImageViewHolder h = (ImageViewHolder) holder;
+                    h.getRootView().setTag(mediaStoreImage);
+
+                    Glide.with(h.getImageView())
+                            .load(mediaStoreImage.contentUri)
+                            .thumbnail(0.33f)
+                            .centerCrop()
+                            .into(h.getImageView());
+            }
+
         }
     }
 }
@@ -210,4 +239,16 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     public View getRootView() {
         return mRootView;
     }
+}
+
+/**
+ * Basic {@link RecyclerView.ViewHolder} for our new image button.
+ */
+class NewImageViewHolder extends RecyclerView.ViewHolder {
+
+    public NewImageViewHolder(@NonNull View itemView, Context context) {
+        super(itemView);
+        itemView.setOnClickListener(v -> Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show());
+    }
+
 }
