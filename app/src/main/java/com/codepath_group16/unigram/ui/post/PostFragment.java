@@ -50,10 +50,9 @@ public class PostFragment extends Fragment {
         mBinding = FragmentPostBinding.inflate(inflater, container, false);
 
         GalleryAdapter galleryAdapter = new GalleryAdapter();
-
         mBinding.gallery.setAdapter(galleryAdapter);
-        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
+        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
         mPostViewModel.getImages().observe(requireActivity(), galleryAdapter::submitList);
 
