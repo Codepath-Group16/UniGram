@@ -5,4 +5,9 @@
     <string name="title_post">Post</string>
     <string name="title_profile">Profile</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="username">username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="or">Or</string>
+    <string name="sign_up">Sign Up</string>
 </resources>

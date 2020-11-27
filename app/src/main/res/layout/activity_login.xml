@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="30dp"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/unigram"
+        />
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/pretty_edittext"
+        android:hint="@string/username"
+        android:paddingLeft="10dp"
+        android:autofillHints="" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="fill_parent"
+        android:layout_height="42dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/pretty_edittext"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:paddingLeft="10dp" />
+
+    <Button
+        android:id="@+id/log_out"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_border_login"
+        android:text="@string/login"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/or"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_border"
+        android:text="@string/sign_up"
+        android:textSize="18sp" />
+</LinearLayout>
