@@ -38,7 +38,7 @@ interested and prospective applicants.
 
 #### Current Progress GIFs
 
-![Authentication](https://github.com/Codepath-Group16/UniGram/blob/authentication/vediowalkthrough.gif)
+![Authentication](https://github.com/Codepath-Group16/UniGram/blob/main/vediowalkthrough.gif)
 
 ![gallery_night](https://user-images.githubusercontent.com/22187034/100414114-41ea9200-3079-11eb-9b5f-303793529b82.gif)
 
