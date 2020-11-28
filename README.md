@@ -5,8 +5,9 @@
 ### Table of Contents
 
 1. [Overview](#Overview)
-1. [Product Spec](#Product-Spec)
-1. [WireFrames](#WireFrames)
+2. [Progress](#Progress)
+3. [Product Spec](#Product-Spec)
+4. [WireFrames](#WireFrames)
 
 ### Overview
 
@@ -26,6 +27,20 @@ interested and prospective applicants.
   - what exactly they're looking for, and
   - if they find the information posted on the school's page helpful. Colleges/Universities can also edit/change information and media contents on their page as they desire and use the app for advertising and introducing their schools as much as they want or find it helpful.
 - **Scope:** First, we would start with matching users to their universities/colleges. Then this could evolve into an experience sharing application as well to broaden its usage in which students can directly connect and socialize with some enrolled students at their matching universities/colleges.
+
+### Progress
+
+#### Completed user-stories
+
+- [x] User signup and login
+- [x] Gallery view of user's saved images
+- [x] Bottom navigation
+
+#### Current Progress GIFs
+
+![Authentication](https://github.com/Codepath-Group16/UniGram/blob/authentication/vediowalkthrough.gif)
+
+![gallery_night](https://user-images.githubusercontent.com/22187034/100414114-41ea9200-3079-11eb-9b5f-303793529b82.gif)
 
 ### Product Spec
 
