@@ -190,7 +190,7 @@ public class PostFragment extends Fragment {
                 case IMAGE_VIEW_TYPE:
                 default:
                     View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-                    return new ImageViewHolder(view);
+                    return new ImageViewHolder(view, parent);
             }
         }
 
@@ -225,10 +225,18 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     View mRootView;
     ImageView mImageView;
 
-    public ImageViewHolder(@NonNull View itemView) {
+    public ImageViewHolder(@NonNull View itemView, ViewGroup parent) {
         super(itemView);
         mRootView = itemView;
         mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+
+        mImageView.setOnClickListener(v -> {
+            ImageView ivSelected = parent.getRootView().findViewById(R.id.selected_image);
+            Glide.with(parent.getContext())
+                    .load(((MediaStoreImage) mRootView.getTag()).contentUri)
+                    .centerCrop()
+                    .into(ivSelected);
+        });
     }
 
     public ImageView getImageView() {
