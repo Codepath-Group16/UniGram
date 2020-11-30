@@ -10,12 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,9 +56,13 @@ public class PostFragment extends Fragment {
         mPostViewModel.getImages().observe(requireActivity(), mediaStoreImages -> {
             galleryAdapter.submitList(mediaStoreImages);
             if (mediaStoreImages.size() > 1) {
-                mBinding.emptyGallery.setVisibility(View.INVISIBLE);
+                if (mBinding != null) {
+                    mBinding.emptyGallery.setVisibility(View.INVISIBLE);
+                }
             } else {
-                mBinding.emptyGallery.setVisibility(View.VISIBLE);
+                if (mBinding != null) {
+                    mBinding.emptyGallery.setVisibility(View.VISIBLE);
+                }
             }
         });
         mPostViewModel.getSelectedImage().observe(requireActivity(), this::showSelectedImage);
@@ -149,10 +153,12 @@ public class PostFragment extends Fragment {
         if (!(image == null)) {
             imageUri = image.contentUri;
         }
-        Glide.with(requireContext())
-                .load(imageUri)
-                .centerCrop()
-                .into(mBinding.selectedImage);
+        if (mBinding != null) {
+            Glide.with(requireContext())
+                    .load(imageUri)
+                    .centerCrop()
+                    .into(mBinding.selectedImage);
+        }
     }
 
     /**
@@ -160,7 +166,7 @@ public class PostFragment extends Fragment {
      * has been granted to the app.
      */
     private boolean haveStoragePermission() {
-        return ContextCompat.checkSelfPermission(
+        return PermissionChecker.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PERMISSION_GRANTED;
@@ -272,7 +278,7 @@ class NewImageViewHolder extends RecyclerView.ViewHolder {
     public NewImageViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
         MaterialButton btnNewImage = itemView.findViewById(R.id.new_image);
-        btnNewImage.setOnClickListener(v -> Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show());
+        btnNewImage.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_navigation_post_to_captureImageFragment));
     }
 
 }

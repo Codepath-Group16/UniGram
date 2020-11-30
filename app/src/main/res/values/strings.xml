@@ -4,7 +4,7 @@
     <string name="open_album">Open Album</string>
     <string name="grant_permission">Grant Permission</string>
 
-    <string name="permission_not_granted">App requires access to storage to access items stored in MediaStore.</string>
+    <string name="permission_not_granted_media_store">App requires access to storage to access items stored in MediaStore.</string>
 
     <string name="title_feed">Feed</string>
     <string name="title_explore">Explore</string>
@@ -22,4 +22,7 @@
     <string name="empty_gallery">Your Gallery is Empty</string>
     <string name="empty_gallery_suggestion">Take a photo to fill your gallery</string>
     <string name="empty_gallery_icon_description">Empty Gallery Icon</string>
+
+    <string name="take_photo">Take Photo</string>
+    <string name="permission_denied">Permissions not granted by the user.</string>
 </resources>
