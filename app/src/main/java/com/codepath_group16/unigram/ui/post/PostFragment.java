@@ -72,6 +72,7 @@ public class PostFragment extends Fragment {
 
         if (!haveStoragePermission()) {
             mBinding.welcomeView.setVisibility(View.VISIBLE);
+            mBinding.emptyGallery.setVisibility(View.GONE);
             mBinding.gallery.setVisibility(View.GONE);
         } else {
             showImages();
@@ -115,6 +116,7 @@ public class PostFragment extends Fragment {
 
     private void showNoAccess() {
         mBinding.welcomeView.setVisibility(View.GONE);
+        mBinding.emptyGallery.setVisibility(View.GONE);
         mBinding.gallery.setVisibility(View.GONE);
         mBinding.permissionRationaleView.setVisibility(View.VISIBLE);
     }
