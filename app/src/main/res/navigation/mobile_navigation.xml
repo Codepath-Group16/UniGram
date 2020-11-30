@@ -37,7 +37,7 @@
     <fragment
         android:id="@+id/navigation_capture_image"
         android:name="com.codepath_group16.unigram.ui.post.CaptureImageFragment"
-        android:label="fragment_capture_image"
+        android:label="@string/title_take_photo"
         tools:layout="@layout/fragment_capture_image" />
 
 </navigation>
