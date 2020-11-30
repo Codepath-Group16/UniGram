@@ -181,9 +181,14 @@ public class PostViewModel extends AndroidViewModel {
             selectedImage.setValue(images.get(1));
         }
 
-        if (!imageSelectedStillExists && cursor.getCount() > 0) {
-            // Set the selected image to be the first image when the selected image doesn't exist anymore
-            selectedImage.setValue(images.get(1));
+        if (!imageSelectedStillExists) {
+            if (cursor.getCount() > 0) {
+                // Set the selected image to be the first image when the
+                // selected image doesn't exist anymore and there are images
+                selectedImage.setValue(images.get(1));
+            } else {
+                selectedImage.setValue(null);
+            }
         }
         cursor.close();
 

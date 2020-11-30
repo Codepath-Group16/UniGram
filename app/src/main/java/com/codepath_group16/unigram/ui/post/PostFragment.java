@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
@@ -28,7 +26,6 @@ import com.codepath_group16.unigram.databinding.FragmentPostBinding;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
@@ -36,14 +33,12 @@ import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class PostFragment extends Fragment {
 
+    private static PostViewModel mPostViewModel;
     private final String TAG = getClass().getSimpleName();
-
     /**
      * The request code for requesting Manifest.permission.READ_EXTERNAL_STORAGE permission.
      */
     private final int READ_EXTERNAL_STORAGE_REQUEST = 0x1045;
-
-    private static PostViewModel mPostViewModel;
     private FragmentPostBinding mBinding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -58,7 +53,14 @@ public class PostFragment extends Fragment {
 
         mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
-        mPostViewModel.getImages().observe(requireActivity(), galleryAdapter::submitList);
+        mPostViewModel.getImages().observe(requireActivity(), mediaStoreImages -> {
+            galleryAdapter.submitList(mediaStoreImages);
+            if (mediaStoreImages.size() > 1) {
+                mBinding.emptyGallery.setVisibility(View.INVISIBLE);
+            } else {
+                mBinding.emptyGallery.setVisibility(View.VISIBLE);
+            }
+        });
         mPostViewModel.getSelectedImage().observe(requireActivity(), this::showSelectedImage);
 
         mBinding.openAlbum.setOnClickListener(v -> openMediaStore());
@@ -143,8 +145,12 @@ public class PostFragment extends Fragment {
 
 
     private void showSelectedImage(MediaStoreImage image) {
+        Uri imageUri = null;
+        if (!(image == null)) {
+            imageUri = image.contentUri;
+        }
         Glide.with(requireContext())
-                .load(image.contentUri)
+                .load(imageUri)
                 .centerCrop()
                 .into(mBinding.selectedImage);
     }
@@ -203,7 +209,7 @@ public class PostFragment extends Fragment {
                 case IMAGE_VIEW_TYPE:
                 default:
                     View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-                    return new ImageViewHolder(view, parent, mPostViewModel);
+                    return new ImageViewHolder(view, mPostViewModel);
             }
         }
 
@@ -238,7 +244,7 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     View mRootView;
     ImageView mImageView;
 
-    public ImageViewHolder(@NonNull View itemView, ViewGroup parent, PostViewModel mPostViewModel) {
+    public ImageViewHolder(@NonNull View itemView, PostViewModel mPostViewModel) {
         super(itemView);
         mRootView = itemView;
         mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
