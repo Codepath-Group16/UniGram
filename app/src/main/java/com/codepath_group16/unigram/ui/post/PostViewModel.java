@@ -23,6 +23,7 @@ public class PostViewModel extends AndroidViewModel {
 
     private final String TAG = getClass().getSimpleName();
     private final MutableLiveData<List<MediaStoreImage>> mImages = new MutableLiveData<>();
+    private final MutableLiveData<MediaStoreImage> selectedImage = new MutableLiveData<>();
     private ContentObserver contentObserver = null;
 
     public PostViewModel(Application application) {
@@ -73,6 +74,13 @@ public class PostViewModel extends AndroidViewModel {
 
     private List<MediaStoreImage> queryImages() {
         ArrayList<MediaStoreImage> images = new ArrayList<>();
+        boolean imageSelectedStillExists = false;
+        MediaStoreImage imageSelected = selectedImage.getValue();
+
+        /*
+         * Add the open the camera item as the first item
+         */
+        images.add(new MediaCameraItem());
 
         /*
          * A key concept when working with Android {@link ContentProvider}s is something called
@@ -159,14 +167,39 @@ public class PostViewModel extends AndroidViewModel {
 
             MediaStoreImage image = new MediaStoreImage(id, displayName, dateModified, contentUri);
             images.add(image);
+            if (image.equals(imageSelected)) {
+                imageSelectedStillExists = true;
+            }
 
             // For debugging, we'll output the image objects we create to logcat.
             Log.v(TAG, "Added image: " + image);
         }
 
         Log.v(TAG, String.format("Found %d images", images.size()));
+        if (selectedImage.getValue() == null && cursor.getCount() > 0) {
+            // Set the selected image to be the first image when none is selected
+            selectedImage.setValue(images.get(1));
+        }
+
+        if (!imageSelectedStillExists) {
+            if (cursor.getCount() > 0) {
+                // Set the selected image to be the first image when the
+                // selected image doesn't exist anymore and there are images
+                selectedImage.setValue(images.get(1));
+            } else {
+                selectedImage.setValue(null);
+            }
+        }
         cursor.close();
 
         return images;
+    }
+
+    public void selectImage(MediaStoreImage image) {
+        selectedImage.setValue(image);
+    }
+
+    public LiveData<MediaStoreImage> getSelectedImage() {
+        return selectedImage;
     }
 }

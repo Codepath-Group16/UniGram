@@ -1,6 +1,7 @@
 package com.codepath_group16.unigram.ui.post;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.databinding.FragmentPostBinding;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -30,14 +33,12 @@ import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class PostFragment extends Fragment {
 
+    private static PostViewModel mPostViewModel;
     private final String TAG = getClass().getSimpleName();
-
     /**
      * The request code for requesting Manifest.permission.READ_EXTERNAL_STORAGE permission.
      */
     private final int READ_EXTERNAL_STORAGE_REQUEST = 0x1045;
-
-    private PostViewModel mPostViewModel;
     private FragmentPostBinding mBinding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -48,12 +49,19 @@ public class PostFragment extends Fragment {
         mBinding = FragmentPostBinding.inflate(inflater, container, false);
 
         GalleryAdapter galleryAdapter = new GalleryAdapter();
-
         mBinding.gallery.setAdapter(galleryAdapter);
-        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
+        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
-        mPostViewModel.getImages().observe(requireActivity(), galleryAdapter::submitList);
+        mPostViewModel.getImages().observe(requireActivity(), mediaStoreImages -> {
+            galleryAdapter.submitList(mediaStoreImages);
+            if (mediaStoreImages.size() > 1) {
+                mBinding.emptyGallery.setVisibility(View.INVISIBLE);
+            } else {
+                mBinding.emptyGallery.setVisibility(View.VISIBLE);
+            }
+        });
+        mPostViewModel.getSelectedImage().observe(requireActivity(), this::showSelectedImage);
 
         mBinding.openAlbum.setOnClickListener(v -> openMediaStore());
         mBinding.grantPermissionButton.setOnClickListener(v -> openMediaStore());
@@ -135,6 +143,18 @@ public class PostFragment extends Fragment {
         mPostViewModel.loadImages();
     }
 
+
+    private void showSelectedImage(MediaStoreImage image) {
+        Uri imageUri = null;
+        if (!(image == null)) {
+            imageUri = image.contentUri;
+        }
+        Glide.with(requireContext())
+                .load(imageUri)
+                .centerCrop()
+                .into(mBinding.selectedImage);
+    }
+
     /**
      * Convenience method to check if Manifest.permission.READ_EXTERNAL_STORAGE permission
      * has been granted to the app.
@@ -161,30 +181,57 @@ public class PostFragment extends Fragment {
     /**
      * A {@link ListAdapter for {@link MediaStoreImage}s.
      */
-    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, ImageViewHolder> {
+    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, RecyclerView.ViewHolder> {
+
+        final int IMAGE_VIEW_TYPE = 0;
+        final int OPEN_CAMERA_VIEW_TYPE = 1;
 
         protected GalleryAdapter() {
             super(MediaStoreImage.DiffCallback);
         }
 
+        @Override
+        public int getItemViewType(int position) {
+            if (MediaCameraItem.class.equals(getItem(position).getClass())) {
+                return OPEN_CAMERA_VIEW_TYPE;
+            }
+            return IMAGE_VIEW_TYPE;
+        }
+
         @NonNull
         @Override
-        public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-            return new ImageViewHolder(view);
+            switch (viewType) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    View openCameraView = layoutInflater.inflate(R.layout.gallery_open_camera_layout, parent, false);
+                    return new NewImageViewHolder(openCameraView, parent.getContext());
+                case IMAGE_VIEW_TYPE:
+                default:
+                    View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
+                    return new ImageViewHolder(view, mPostViewModel);
+            }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-            MediaStoreImage mediaStoreImage = getItem(position);
-            holder.getRootView().setTag(mediaStoreImage);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-            Glide.with(holder.getImageView())
-                    .load(mediaStoreImage.contentUri)
-                    .thumbnail(0.33f)
-                    .centerCrop()
-                    .into(holder.getImageView());
+            switch (holder.getItemViewType()) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    break;
+                case IMAGE_VIEW_TYPE:
+                default:
+                    MediaStoreImage mediaStoreImage = getItem(position);
+                    ImageViewHolder h = (ImageViewHolder) holder;
+                    h.getRootView().setTag(mediaStoreImage);
+
+                    Glide.with(h.getImageView())
+                            .load(mediaStoreImage.contentUri)
+                            .thumbnail(0.33f)
+                            .centerCrop()
+                            .into(h.getImageView());
+            }
+
         }
     }
 }
@@ -197,10 +244,15 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     View mRootView;
     ImageView mImageView;
 
-    public ImageViewHolder(@NonNull View itemView) {
+    public ImageViewHolder(@NonNull View itemView, PostViewModel mPostViewModel) {
         super(itemView);
         mRootView = itemView;
         mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+
+        mImageView.setOnClickListener(v -> {
+            MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
+            mPostViewModel.selectImage(image);
+        });
     }
 
     public ImageView getImageView() {
@@ -210,4 +262,17 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     public View getRootView() {
         return mRootView;
     }
+}
+
+/**
+ * Basic {@link RecyclerView.ViewHolder} for our new image button.
+ */
+class NewImageViewHolder extends RecyclerView.ViewHolder {
+
+    public NewImageViewHolder(@NonNull View itemView, Context context) {
+        super(itemView);
+        MaterialButton btnNewImage = itemView.findViewById(R.id.new_image);
+        btnNewImage.setOnClickListener(v -> Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show());
+    }
+
 }

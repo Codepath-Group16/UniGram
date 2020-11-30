@@ -18,4 +18,8 @@
     <string name="login">Login</string>
     <string name="or">Or</string>
     <string name="sign_up">Sign Up</string>
+    <string name="selected_image_description">Selected image to post description</string>
+    <string name="empty_gallery">Your Gallery is Empty</string>
+    <string name="empty_gallery_suggestion">Take a photo to fill your gallery</string>
+    <string name="empty_gallery_icon_description">Empty Gallery Icon</string>
 </resources>
