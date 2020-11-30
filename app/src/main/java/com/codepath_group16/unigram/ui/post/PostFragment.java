@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.databinding.FragmentPostBinding;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -255,7 +256,8 @@ class NewImageViewHolder extends RecyclerView.ViewHolder {
 
     public NewImageViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
-        itemView.setOnClickListener(v -> Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show());
+        MaterialButton btnNewImage = itemView.findViewById(R.id.new_image);
+        btnNewImage.setOnClickListener(v -> Toast.makeText(context, "Hello", Toast.LENGTH_SHORT).show());
     }
 
 }
