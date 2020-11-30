@@ -171,6 +171,10 @@ public class PostViewModel extends AndroidViewModel {
         }
 
         Log.v(TAG, String.format("Found %d images", images.size()));
+        if (selectedImage.getValue() == null && cursor.getCount() > 0) {
+            // Set the selected image to be the first image when none is selected
+            selectedImage.setValue(images.get(1));
+        }
         cursor.close();
 
         return images;
