@@ -18,7 +18,6 @@ package com.codepath_group16.unigram.ui.post;
  * limitations under the License.
  */
 
-import android.media.browse.MediaBrowser;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -66,7 +65,7 @@ class MediaStoreImage {
         if (obj == this)
             return true;
 
-        if (getClass() != obj.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
 
         MediaStoreImage image = (MediaStoreImage) obj;

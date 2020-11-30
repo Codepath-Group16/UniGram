@@ -74,6 +74,8 @@ public class PostViewModel extends AndroidViewModel {
 
     private List<MediaStoreImage> queryImages() {
         ArrayList<MediaStoreImage> images = new ArrayList<>();
+        boolean imageSelectedStillExists = false;
+        MediaStoreImage imageSelected = selectedImage.getValue();
 
         /*
          * Add the open the camera item as the first item
@@ -165,6 +167,9 @@ public class PostViewModel extends AndroidViewModel {
 
             MediaStoreImage image = new MediaStoreImage(id, displayName, dateModified, contentUri);
             images.add(image);
+            if (image.equals(imageSelected)) {
+                imageSelectedStillExists = true;
+            }
 
             // For debugging, we'll output the image objects we create to logcat.
             Log.v(TAG, "Added image: " + image);
@@ -173,6 +178,11 @@ public class PostViewModel extends AndroidViewModel {
         Log.v(TAG, String.format("Found %d images", images.size()));
         if (selectedImage.getValue() == null && cursor.getCount() > 0) {
             // Set the selected image to be the first image when none is selected
+            selectedImage.setValue(images.get(1));
+        }
+
+        if (!imageSelectedStillExists && cursor.getCount() > 0) {
+            // Set the selected image to be the first image when the selected image doesn't exist anymore
             selectedImage.setValue(images.get(1));
         }
         cursor.close();
