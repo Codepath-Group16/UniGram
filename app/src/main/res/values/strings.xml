@@ -23,6 +23,7 @@
     <string name="empty_gallery_suggestion">Take a photo to fill your gallery</string>
     <string name="empty_gallery_icon_description">Empty Gallery Icon</string>
 
-    <string name="take_photo">Take Photo</string>
+    <string name="capture_button_alt">Capture</string>
+    <string name="switch_camera_button_alt">Switch camera</string>
     <string name="permission_denied">Permissions not granted by the user.</string>
 </resources>
