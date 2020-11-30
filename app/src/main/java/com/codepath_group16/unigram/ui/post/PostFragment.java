@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
@@ -48,8 +49,12 @@ public class PostFragment extends Fragment {
 
         mBinding = FragmentPostBinding.inflate(inflater, container, false);
 
-        GalleryAdapter galleryAdapter = new GalleryAdapter();
+        GalleryAdapter galleryAdapter = new GalleryAdapter(requireContext());
         mBinding.gallery.setAdapter(galleryAdapter);
+
+        // Prevent flickering when item is clicked
+        SimpleItemAnimator animator = (SimpleItemAnimator) mBinding.gallery.getItemAnimator();
+        Objects.requireNonNull(animator).setSupportsChangeAnimations(false);
 
         mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
@@ -185,9 +190,13 @@ public class PostFragment extends Fragment {
 
         final int IMAGE_VIEW_TYPE = 0;
         final int OPEN_CAMERA_VIEW_TYPE = 1;
+        private final Context mContext;
+        int selectedItemPos = -1;
+        int lastItemSelectedPos = -1;
 
-        protected GalleryAdapter() {
+        protected GalleryAdapter(Context context) {
             super(MediaStoreImage.DiffCallback);
+            mContext = context;
         }
 
         @Override
@@ -230,37 +239,60 @@ public class PostFragment extends Fragment {
                             .thumbnail(0.33f)
                             .centerCrop()
                             .into(h.getImageView());
+
+                    if (position == selectedItemPos) {
+                        h.selectedBg();
+                    } else {
+                        h.defaultBg();
+                    }
             }
 
         }
-    }
-}
 
-/**
- * Basic {@link RecyclerView.ViewHolder} for our gallery.
- */
-class ImageViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * Basic {@link RecyclerView.ViewHolder} for our gallery.
+         */
+        class ImageViewHolder extends RecyclerView.ViewHolder {
 
-    View mRootView;
-    ImageView mImageView;
+            View mRootView;
+            ImageView mImageView;
 
-    public ImageViewHolder(@NonNull View itemView, PostViewModel mPostViewModel) {
-        super(itemView);
-        mRootView = itemView;
-        mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+            public ImageViewHolder(@NonNull View itemView, PostViewModel mPostViewModel) {
+                super(itemView);
+                mRootView = itemView;
+                mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
 
-        mImageView.setOnClickListener(v -> {
-            MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
-            mPostViewModel.selectImage(image);
-        });
-    }
+                mImageView.setOnClickListener(v -> {
+                    MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
+                    mPostViewModel.selectImage(image);
+                    selectedItemPos = getAdapterPosition();
 
-    public ImageView getImageView() {
-        return mImageView;
-    }
+                    if (lastItemSelectedPos == -1) {
+                        lastItemSelectedPos = selectedItemPos;
+                    } else {
+                        notifyItemChanged(lastItemSelectedPos);
+                        lastItemSelectedPos = selectedItemPos;
+                    }
+                    notifyItemChanged(selectedItemPos);
+                });
+            }
 
-    public View getRootView() {
-        return mRootView;
+            public ImageView getImageView() {
+                return mImageView;
+            }
+
+            public View getRootView() {
+                return mRootView;
+            }
+
+            void defaultBg() {
+                mRootView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.bg_image_unselected));
+            }
+
+            void selectedBg() {
+                mRootView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.bg_image_selected));
+            }
+        }
     }
 }
 
