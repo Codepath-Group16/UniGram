@@ -3,13 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_feed">
+    app:startDestination="@id/navigation_feed">
 
     <fragment
         android:id="@+id/navigation_feed"
         android:name="com.codepath_group16.unigram.ui.feed.FeedFragment"
         android:label="@string/title_feed"
-        tools:layout="@layout/fragment_feed" />
+        tools:layout="@layout/fragment_feed">
+        <action
+            android:id="@+id/action_navigation_feed_to_loginFragment"
+            app:destination="@id/navigation_login" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_explore"
@@ -28,5 +32,13 @@
         android:name="com.codepath_group16.unigram.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.codepath_group16.unigram.ui.login.LoginFragment"
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_navigation_feed"
+            app:destination="@id/navigation_feed" />
+    </fragment>
 
 </navigation>
