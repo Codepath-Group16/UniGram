@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
@@ -26,6 +28,7 @@ import com.codepath_group16.unigram.databinding.FragmentPostBinding;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
@@ -40,7 +43,7 @@ public class PostFragment extends Fragment {
      */
     private final int READ_EXTERNAL_STORAGE_REQUEST = 0x1045;
 
-    private PostViewModel mPostViewModel;
+    private static PostViewModel mPostViewModel;
     private FragmentPostBinding mBinding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -56,6 +59,7 @@ public class PostFragment extends Fragment {
         mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
 
         mPostViewModel.getImages().observe(requireActivity(), galleryAdapter::submitList);
+        mPostViewModel.getSelectedImage().observe(requireActivity(), this::showSelectedImage);
 
         mBinding.openAlbum.setOnClickListener(v -> openMediaStore());
         mBinding.grantPermissionButton.setOnClickListener(v -> openMediaStore());
@@ -137,6 +141,14 @@ public class PostFragment extends Fragment {
         mPostViewModel.loadImages();
     }
 
+
+    private void showSelectedImage(MediaStoreImage image) {
+        Glide.with(requireContext())
+                .load(image.contentUri)
+                .centerCrop()
+                .into(mBinding.selectedImage);
+    }
+
     /**
      * Convenience method to check if Manifest.permission.READ_EXTERNAL_STORAGE permission
      * has been granted to the app.
@@ -191,7 +203,7 @@ public class PostFragment extends Fragment {
                 case IMAGE_VIEW_TYPE:
                 default:
                     View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-                    return new ImageViewHolder(view, parent);
+                    return new ImageViewHolder(view, parent, mPostViewModel);
             }
         }
 
@@ -226,17 +238,14 @@ class ImageViewHolder extends RecyclerView.ViewHolder {
     View mRootView;
     ImageView mImageView;
 
-    public ImageViewHolder(@NonNull View itemView, ViewGroup parent) {
+    public ImageViewHolder(@NonNull View itemView, ViewGroup parent, PostViewModel mPostViewModel) {
         super(itemView);
         mRootView = itemView;
         mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
 
         mImageView.setOnClickListener(v -> {
-            ImageView ivSelected = parent.getRootView().findViewById(R.id.selected_image);
-            Glide.with(parent.getContext())
-                    .load(((MediaStoreImage) mRootView.getTag()).contentUri)
-                    .centerCrop()
-                    .into(ivSelected);
+            MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
+            mPostViewModel.selectImage(image);
         });
     }
 

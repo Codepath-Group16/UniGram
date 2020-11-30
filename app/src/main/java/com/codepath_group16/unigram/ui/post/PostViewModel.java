@@ -23,6 +23,7 @@ public class PostViewModel extends AndroidViewModel {
 
     private final String TAG = getClass().getSimpleName();
     private final MutableLiveData<List<MediaStoreImage>> mImages = new MutableLiveData<>();
+    private final MutableLiveData<MediaStoreImage> selectedImage = new MutableLiveData<>();
     private ContentObserver contentObserver = null;
 
     public PostViewModel(Application application) {
@@ -173,5 +174,13 @@ public class PostViewModel extends AndroidViewModel {
         cursor.close();
 
         return images;
+    }
+
+    public void selectImage(MediaStoreImage image) {
+        selectedImage.setValue(image);
+    }
+
+    public LiveData<MediaStoreImage> getSelectedImage() {
+        return selectedImage;
     }
 }
