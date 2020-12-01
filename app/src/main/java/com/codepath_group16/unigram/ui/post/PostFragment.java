@@ -191,8 +191,6 @@ public class PostFragment extends Fragment {
         final int IMAGE_VIEW_TYPE = 0;
         final int OPEN_CAMERA_VIEW_TYPE = 1;
         private final Context mContext;
-        int selectedItemPos = -1;
-        int lastItemSelectedPos = -1;
 
         protected GalleryAdapter(Context context) {
             super(MediaStoreImage.DiffCallback);
@@ -218,7 +216,7 @@ public class PostFragment extends Fragment {
                 case IMAGE_VIEW_TYPE:
                 default:
                     View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-                    return new ImageViewHolder(view, mPostViewModel);
+                    return new ImageViewHolder(view);
             }
         }
 
@@ -240,7 +238,7 @@ public class PostFragment extends Fragment {
                             .centerCrop()
                             .into(h.getImageView());
 
-                    if (position == selectedItemPos) {
+                    if (position == mPostViewModel.getCurrentSelectedImagePosition()) {
                         h.selectedBg();
                     } else {
                         h.defaultBg();
@@ -257,23 +255,20 @@ public class PostFragment extends Fragment {
             View mRootView;
             ImageView mImageView;
 
-            public ImageViewHolder(@NonNull View itemView, PostViewModel mPostViewModel) {
+            public ImageViewHolder(@NonNull View itemView) {
                 super(itemView);
                 mRootView = itemView;
                 mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
 
                 mImageView.setOnClickListener(v -> {
                     MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
-                    mPostViewModel.selectImage(image);
-                    selectedItemPos = getAdapterPosition();
+                    mPostViewModel.selectImage(image, getAdapterPosition());
 
-                    if (lastItemSelectedPos == -1) {
-                        lastItemSelectedPos = selectedItemPos;
-                    } else {
-                        notifyItemChanged(lastItemSelectedPos);
-                        lastItemSelectedPos = selectedItemPos;
+                    if (mPostViewModel.getPreviousSelectedImagePosition() != -1) {
+                        notifyItemChanged(mPostViewModel.getPreviousSelectedImagePosition());
                     }
-                    notifyItemChanged(selectedItemPos);
+                    mPostViewModel.setPreviousSelectedImagePosition(mPostViewModel.getCurrentSelectedImagePosition());
+                    notifyItemChanged(mPostViewModel.getCurrentSelectedImagePosition());
                 });
             }
 
