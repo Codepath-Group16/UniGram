@@ -1,7 +1,6 @@
 package com.codepath_group16.unigram.ui.post;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -183,13 +182,6 @@ public class CaptureImageFragment extends Fragment {
 
     private File getOutputDirectory() {
 
-//        val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
-//            File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
-//        return if (mediaDir != null && mediaDir.exists())
-//            mediaDir else appContext.filesDir;
-
-
-        Context appContext = requireContext();
         File[] mediaDir = requireContext().getExternalMediaDirs();
 
         File file;
@@ -200,7 +192,7 @@ public class CaptureImageFragment extends Fragment {
         }
 
         if (file != null) {
-            File outputFile = new File(file, appContext.getResources().getString(R.string.app_name));
+            File outputFile = new File(file, requireContext().getResources().getString(R.string.app_name));
             if (outputFile.mkdirs()) {
                 file = outputFile;
             }
@@ -209,7 +201,7 @@ public class CaptureImageFragment extends Fragment {
         if (file != null && file.exists()) {
             return file;
         } else {
-            return appContext.getFilesDir();
+            return requireContext().getFilesDir();
         }
 
     }
