@@ -23,6 +23,9 @@ public class PostViewModel extends AndroidViewModel {
 
     private final String TAG = getClass().getSimpleName();
     private final MutableLiveData<List<MediaStoreImage>> mImages = new MutableLiveData<>();
+    private final MutableLiveData<MediaStoreImage> selectedImage = new MutableLiveData<>();
+    private int currentSelectedImagePosition = -1;
+    private int previousSelectedImagePosition = -1;
     private ContentObserver contentObserver = null;
 
     public PostViewModel(Application application) {
@@ -73,6 +76,13 @@ public class PostViewModel extends AndroidViewModel {
 
     private List<MediaStoreImage> queryImages() {
         ArrayList<MediaStoreImage> images = new ArrayList<>();
+        boolean imageSelectedStillExists = false;
+        MediaStoreImage imageSelected = selectedImage.getValue();
+
+        /*
+         * Add the open the camera item as the first item
+         */
+        images.add(new MediaCameraItem());
 
         /*
          * A key concept when working with Android {@link ContentProvider}s is something called
@@ -159,14 +169,57 @@ public class PostViewModel extends AndroidViewModel {
 
             MediaStoreImage image = new MediaStoreImage(id, displayName, dateModified, contentUri);
             images.add(image);
+            if (image.equals(imageSelected)) {
+                imageSelectedStillExists = true;
+                int imagePosition = cursor.getPosition() + 1;
+                currentSelectedImagePosition = imagePosition;
+                previousSelectedImagePosition = imagePosition;
+            }
 
             // For debugging, we'll output the image objects we create to logcat.
             Log.v(TAG, "Added image: " + image);
         }
 
-        Log.v(TAG, String.format("Found %d images", images.size()));
+        Log.v(TAG, String.format("Found %d image items", images.size()));
+        if (selectedImage.getValue() == null && cursor.getCount() > 0) {
+            // Set the selected image to be the first image when none is selected
+            selectImage(images.get(1), 1);
+            previousSelectedImagePosition = 1;
+        }
+
+        if (!imageSelectedStillExists) {
+            if (cursor.getCount() > 0) {
+                // Set the selected image to be the first image when the
+                // selected image doesn't exist anymore and there are images
+                selectImage(images.get(1), 1);
+            } else {
+                selectImage(null, -1);
+                previousSelectedImagePosition = -1;
+            }
+        }
         cursor.close();
 
         return images;
+    }
+
+    public void selectImage(MediaStoreImage image, int position) {
+        selectedImage.setValue(image);
+        currentSelectedImagePosition = position;
+    }
+
+    public LiveData<MediaStoreImage> getSelectedImage() {
+        return selectedImage;
+    }
+
+    public int getCurrentSelectedImagePosition() {
+        return currentSelectedImagePosition;
+    }
+
+    public int getPreviousSelectedImagePosition() {
+        return previousSelectedImagePosition;
+    }
+
+    public void setPreviousSelectedImagePosition(int previousSelectedImagePosition) {
+        this.previousSelectedImagePosition = previousSelectedImagePosition;
     }
 }

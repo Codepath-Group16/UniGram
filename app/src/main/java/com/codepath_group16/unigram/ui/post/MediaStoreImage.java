@@ -65,11 +65,31 @@ class MediaStoreImage {
         if (obj == this)
             return true;
 
-        if (getClass() != obj.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
 
         MediaStoreImage image = (MediaStoreImage) obj;
 
         return this.id == image.id && this.displayName.equals(image.displayName) && this.contentUri.equals(image.contentUri);
+    }
+}
+
+class MediaCameraItem extends MediaStoreImage {
+
+    public MediaCameraItem() {
+        super(-1, null, null, null);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+
+        if (getClass() != obj.getClass())
+            return false;
+
+        MediaCameraItem new_photo = (MediaCameraItem) obj;
+
+        return this.id == new_photo.id;
     }
 }

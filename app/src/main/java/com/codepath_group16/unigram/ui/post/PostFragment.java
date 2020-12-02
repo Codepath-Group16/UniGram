@@ -1,6 +1,7 @@
 package com.codepath_group16.unigram.ui.post;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,15 +13,19 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.databinding.FragmentPostBinding;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -30,14 +35,12 @@ import static androidx.core.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class PostFragment extends Fragment {
 
+    private static PostViewModel mPostViewModel;
     private final String TAG = getClass().getSimpleName();
-
     /**
      * The request code for requesting Manifest.permission.READ_EXTERNAL_STORAGE permission.
      */
     private final int READ_EXTERNAL_STORAGE_REQUEST = 0x1045;
-
-    private PostViewModel mPostViewModel;
     private FragmentPostBinding mBinding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -47,19 +50,35 @@ public class PostFragment extends Fragment {
 
         mBinding = FragmentPostBinding.inflate(inflater, container, false);
 
-        GalleryAdapter galleryAdapter = new GalleryAdapter();
-
+        GalleryAdapter galleryAdapter = new GalleryAdapter(requireContext());
         mBinding.gallery.setAdapter(galleryAdapter);
-        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
+        // Prevent flickering when item is clicked
+        SimpleItemAnimator animator = (SimpleItemAnimator) mBinding.gallery.getItemAnimator();
+        Objects.requireNonNull(animator).setSupportsChangeAnimations(false);
 
-        mPostViewModel.getImages().observe(requireActivity(), galleryAdapter::submitList);
+        mBinding.gallery.setLayoutManager(new GridLayoutManager(getContext(), 4));
+
+        mPostViewModel.getImages().observe(requireActivity(), mediaStoreImages -> {
+            galleryAdapter.submitList(mediaStoreImages);
+            if (mediaStoreImages.size() > 1) {
+                if (mBinding != null) {
+                    mBinding.emptyGallery.setVisibility(View.INVISIBLE);
+                }
+            } else {
+                if (mBinding != null) {
+                    mBinding.emptyGallery.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        mPostViewModel.getSelectedImage().observe(requireActivity(), this::showSelectedImage);
 
         mBinding.openAlbum.setOnClickListener(v -> openMediaStore());
         mBinding.grantPermissionButton.setOnClickListener(v -> openMediaStore());
 
         if (!haveStoragePermission()) {
             mBinding.welcomeView.setVisibility(View.VISIBLE);
+            mBinding.emptyGallery.setVisibility(View.GONE);
             mBinding.gallery.setVisibility(View.GONE);
         } else {
             showImages();
@@ -103,6 +122,7 @@ public class PostFragment extends Fragment {
 
     private void showNoAccess() {
         mBinding.welcomeView.setVisibility(View.GONE);
+        mBinding.emptyGallery.setVisibility(View.GONE);
         mBinding.gallery.setVisibility(View.GONE);
         mBinding.permissionRationaleView.setVisibility(View.VISIBLE);
     }
@@ -135,12 +155,26 @@ public class PostFragment extends Fragment {
         mPostViewModel.loadImages();
     }
 
+
+    private void showSelectedImage(MediaStoreImage image) {
+        Uri imageUri = null;
+        if (!(image == null)) {
+            imageUri = image.contentUri;
+        }
+        if (mBinding != null) {
+            Glide.with(requireContext())
+                    .load(imageUri)
+                    .centerCrop()
+                    .into(mBinding.selectedImage);
+        }
+    }
+
     /**
      * Convenience method to check if Manifest.permission.READ_EXTERNAL_STORAGE permission
      * has been granted to the app.
      */
     private boolean haveStoragePermission() {
-        return ContextCompat.checkSelfPermission(
+        return PermissionChecker.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PERMISSION_GRANTED;
@@ -161,53 +195,120 @@ public class PostFragment extends Fragment {
     /**
      * A {@link ListAdapter for {@link MediaStoreImage}s.
      */
-    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, ImageViewHolder> {
+    private static class GalleryAdapter extends ListAdapter<MediaStoreImage, RecyclerView.ViewHolder> {
 
-        protected GalleryAdapter() {
+        final int IMAGE_VIEW_TYPE = 0;
+        final int OPEN_CAMERA_VIEW_TYPE = 1;
+        private final Context mContext;
+
+        protected GalleryAdapter(Context context) {
             super(MediaStoreImage.DiffCallback);
+            mContext = context;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (MediaCameraItem.class.equals(getItem(position).getClass())) {
+                return OPEN_CAMERA_VIEW_TYPE;
+            }
+            return IMAGE_VIEW_TYPE;
         }
 
         @NonNull
         @Override
-        public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-            View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
-            return new ImageViewHolder(view);
+            switch (viewType) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    View openCameraView = layoutInflater.inflate(R.layout.gallery_open_camera_layout, parent, false);
+                    return new NewImageViewHolder(openCameraView, parent.getContext());
+                case IMAGE_VIEW_TYPE:
+                default:
+                    View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
+                    return new ImageViewHolder(view);
+            }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-            MediaStoreImage mediaStoreImage = getItem(position);
-            holder.getRootView().setTag(mediaStoreImage);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-            Glide.with(holder.getImageView())
-                    .load(mediaStoreImage.contentUri)
-                    .thumbnail(0.33f)
-                    .centerCrop()
-                    .into(holder.getImageView());
+            switch (holder.getItemViewType()) {
+                case OPEN_CAMERA_VIEW_TYPE:
+                    break;
+                case IMAGE_VIEW_TYPE:
+                default:
+                    MediaStoreImage mediaStoreImage = getItem(position);
+                    ImageViewHolder h = (ImageViewHolder) holder;
+                    h.getRootView().setTag(mediaStoreImage);
+
+                    Glide.with(h.getImageView())
+                            .load(mediaStoreImage.contentUri)
+                            .thumbnail(0.33f)
+                            .centerCrop()
+                            .into(h.getImageView());
+
+                    if (position == mPostViewModel.getCurrentSelectedImagePosition()) {
+                        h.selectedBg();
+                    } else {
+                        h.defaultBg();
+                    }
+            }
+
+        }
+
+        /**
+         * Basic {@link RecyclerView.ViewHolder} for our gallery.
+         */
+        class ImageViewHolder extends RecyclerView.ViewHolder {
+
+            View mRootView;
+            ImageView mImageView;
+
+            public ImageViewHolder(@NonNull View itemView) {
+                super(itemView);
+                mRootView = itemView;
+                mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+
+                mImageView.setOnClickListener(v -> {
+                    MediaStoreImage image = (MediaStoreImage) mRootView.getTag();
+                    mPostViewModel.selectImage(image, getAdapterPosition());
+
+                    if (mPostViewModel.getPreviousSelectedImagePosition() != -1) {
+                        notifyItemChanged(mPostViewModel.getPreviousSelectedImagePosition());
+                    }
+                    mPostViewModel.setPreviousSelectedImagePosition(mPostViewModel.getCurrentSelectedImagePosition());
+                    notifyItemChanged(mPostViewModel.getCurrentSelectedImagePosition());
+                });
+            }
+
+            public ImageView getImageView() {
+                return mImageView;
+            }
+
+            public View getRootView() {
+                return mRootView;
+            }
+
+            void defaultBg() {
+                mRootView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.bg_image_unselected));
+            }
+
+            void selectedBg() {
+                mRootView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.bg_image_selected));
+            }
         }
     }
 }
 
 /**
- * Basic {@link RecyclerView.ViewHolder} for our gallery.
+ * Basic {@link RecyclerView.ViewHolder} for our new image button.
  */
-class ImageViewHolder extends RecyclerView.ViewHolder {
+class NewImageViewHolder extends RecyclerView.ViewHolder {
 
-    View mRootView;
-    ImageView mImageView;
-
-    public ImageViewHolder(@NonNull View itemView) {
+    public NewImageViewHolder(@NonNull View itemView, Context context) {
         super(itemView);
-        mRootView = itemView;
-        mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+        MaterialButton btnNewImage = itemView.findViewById(R.id.new_image);
+        btnNewImage.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_navigation_post_to_captureImageFragment));
     }
 
-    public ImageView getImageView() {
-        return mImageView;
-    }
-
-    public View getRootView() {
-        return mRootView;
-    }
 }

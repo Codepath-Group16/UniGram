@@ -21,12 +21,23 @@
         android:id="@+id/navigation_post"
         android:name="com.codepath_group16.unigram.ui.post.PostFragment"
         android:label="@string/title_post"
-        tools:layout="@layout/fragment_post" />
+        tools:layout="@layout/fragment_post">
+        <action
+            android:id="@+id/action_navigation_post_to_captureImageFragment"
+            app:destination="@id/navigation_capture_image"
+            app:popUpTo="@id/navigation_post" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.codepath_group16.unigram.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_capture_image"
+        android:name="com.codepath_group16.unigram.ui.post.CaptureImageFragment"
+        android:label="@string/title_take_photo"
+        tools:layout="@layout/fragment_capture_image" />
 
 </navigation>
