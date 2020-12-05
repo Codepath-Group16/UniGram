@@ -27,4 +27,6 @@
     <string name="switch_camera_button_alt">Switch camera</string>
     <string name="permission_denied">Permissions not granted by the user.</string>
     <string name="title_take_photo">Take A Photo</string>
+    <string name="unigram">Unigram</string>
+    <string name="test">Test</string>
 </resources>
