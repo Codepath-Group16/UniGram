@@ -15,7 +15,11 @@
         android:id="@+id/navigation_explore"
         android:name="com.codepath_group16.unigram.ui.explore.ExploreFragment"
         android:label="@string/title_explore"
-        tools:layout="@layout/fragment_explore" />
+        tools:layout="@layout/fragment_explore" >
+        <action
+            android:id="@+id/action_navigation_explore_to_uniFragment"
+            app:destination="@id/uniFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_post"
@@ -39,5 +43,10 @@
         android:name="com.codepath_group16.unigram.ui.post.CaptureImageFragment"
         android:label="@string/title_take_photo"
         tools:layout="@layout/fragment_capture_image" />
+    <fragment
+        android:id="@+id/uniFragment"
+        android:name="com.codepath_group16.unigram.UniFragment"
+        android:label="fragment_uni"
+        tools:layout="@layout/fragment_uni" />
 
 </navigation>
