@@ -26,6 +26,9 @@
             android:id="@+id/action_navigation_post_to_captureImageFragment"
             app:destination="@id/navigation_capture_image"
             app:popUpTo="@id/navigation_post" />
+        <action
+            android:id="@+id/action_navigation_post_to_navigation_complete_post"
+            app:destination="@id/navigation_complete_post" />
     </fragment>
 
     <fragment
@@ -39,5 +42,11 @@
         android:name="com.codepath_group16.unigram.ui.post.CaptureImageFragment"
         android:label="@string/title_take_photo"
         tools:layout="@layout/fragment_capture_image" />
+
+    <fragment
+        android:id="@+id/navigation_complete_post"
+        android:name="com.codepath_group16.unigram.ui.post.CompletePostFragment"
+        android:label="fragment_complete_post"
+        tools:layout="@layout/fragment_complete_post" />
 
 </navigation>
