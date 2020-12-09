@@ -36,7 +36,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(mBinding.navView, navController);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if (destination.getId() == R.id.navigation_capture_image) {
+            // Hide the Bottom Navigation
+            if (
+                    destination.getId() == R.id.navigation_capture_image ||
+                            destination.getId() == R.id.navigation_complete_post
+            ) {
                 mBinding.navView.setVisibility(View.GONE);
             } else {
                 mBinding.navView.setVisibility(View.VISIBLE);

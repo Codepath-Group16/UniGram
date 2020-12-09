@@ -29,4 +29,7 @@
     <string name="title_take_photo">Take A Photo</string>
 
     <string name="label_caption">Caption</string>
+
+    <string name="menu_post">Post</string>
+    <string name="menu_next">Next</string>
 </resources>

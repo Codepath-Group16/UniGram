@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -50,6 +53,8 @@ public class PostFragment extends Fragment {
 
         mBinding = FragmentPostBinding.inflate(inflater, container, false);
 
+        setHasOptionsMenu(true);
+
         GalleryAdapter galleryAdapter = new GalleryAdapter(requireContext());
         mBinding.gallery.setAdapter(galleryAdapter);
 
@@ -85,6 +90,25 @@ public class PostFragment extends Fragment {
         }
 
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.post_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_next) {
+            Navigation.findNavController(mBinding.getRoot())
+                    .navigate(
+                            PostFragmentDirections.actionNavigationPostToNavigationCompletePost(
+                                    mPostViewModel.getSelectedImage().getValue().contentUri
+                            )
+                    );
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

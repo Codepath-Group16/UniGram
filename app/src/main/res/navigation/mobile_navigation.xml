@@ -46,7 +46,11 @@
     <fragment
         android:id="@+id/navigation_complete_post"
         android:name="com.codepath_group16.unigram.ui.post.CompletePostFragment"
-        android:label="fragment_complete_post"
-        tools:layout="@layout/fragment_complete_post" />
+        android:label="@string/title_post"
+        tools:layout="@layout/fragment_complete_post">
+        <argument
+            android:name="ImageUri"
+            app:argType="android.net.Uri" />
+    </fragment>
 
 </navigation>
