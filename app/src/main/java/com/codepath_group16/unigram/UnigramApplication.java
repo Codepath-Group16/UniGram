@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.codepath_group16.unigram.data.models.Post;
 import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseObject;
 
 public class UnigramApplication extends Application {
@@ -21,5 +22,10 @@ public class UnigramApplication extends Application {
                 .server("https://parseapi.back4app.com")
                 .build()
         );
+
+        // Default ACL Public Read, User Write
+        ParseACL defaultACL = new ParseACL();
+        defaultACL.setPublicReadAccess(true);
+        ParseACL.setDefaultACL(defaultACL, true);
     }
 }
