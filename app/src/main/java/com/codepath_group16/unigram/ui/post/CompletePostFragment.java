@@ -1,7 +1,11 @@
 package com.codepath_group16.unigram.ui.post;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -11,6 +15,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,18 +28,20 @@ import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.data.models.Post;
 import com.codepath_group16.unigram.databinding.FragmentCompletePostBinding;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class CompletePostFragment extends Fragment {
 
     private final String TAG = getClass().getSimpleName();
     private FragmentCompletePostBinding mBinding;
     private Uri mImageUri;
+    private ProgressBar mProgressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +62,9 @@ public class CompletePostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mImageUri = CompletePostFragmentArgs.fromBundle(getArguments()).getImageUri();
+        mImageUri = CompletePostFragmentArgs.fromBundle(requireArguments()).getImageUri();
+
+        mProgressBar = mBinding.progressBar;
 
         Glide.with(requireContext())
                 .load(mImageUri)
@@ -70,6 +81,12 @@ public class CompletePostFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_post) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                mBinding.getRoot().getWindowInsetsController().hide(WindowInsets.Type.ime());
+            } else {
+                InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(mBinding.getRoot().getWindowToken(), 0);
+            }
             postImage();
         }
         return super.onOptionsItemSelected(item);
@@ -77,12 +94,9 @@ public class CompletePostFragment extends Fragment {
 
     private void postImage() {
         Post post = new Post();
-        post.setCaption(mBinding.captionInput.getEditText().getText().toString());
-        Log.i(TAG, "postImage: " + mImageUri.getPath());
-        File imageFile = new File(mImageUri.getPath());
-        Log.i(TAG, "postImage: " + imageFile.getName());
+        post.setCaption(Objects.requireNonNull(mBinding.captionInput.getEditText()).getText().toString());
 
-
+        mProgressBar.setVisibility(View.VISIBLE);
         byte[] image;
 
         Bitmap bitmap = null;
@@ -92,15 +106,30 @@ public class CompletePostFragment extends Fragment {
             e.printStackTrace();
         }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        Objects.requireNonNull(bitmap).compress(Bitmap.CompressFormat.PNG, 100, stream);
         image = stream.toByteArray();
         ParseFile parseImageFile = new ParseFile("post.png", image);
 
-        parseImageFile.saveInBackground(e -> {
-            post.setImage(parseImageFile);
-            completePostingImage(post);
-        }, percentDone -> Log.i(TAG, "done: " + percentDone));
-
+        if (isConnected()) {
+            parseImageFile.saveInBackground(e -> {
+                if (e == null) {
+                    post.setImage(parseImageFile);
+                    completePostingImage(post);
+                } else {
+                    Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            }, percentDone -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    mProgressBar.setProgress(percentDone - 10, true);
+                } else {
+                    mProgressBar.setProgress(percentDone - 10);
+                }
+            });
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     private void completePostingImage(Post post) {
@@ -108,14 +137,31 @@ public class CompletePostFragment extends Fragment {
 
         Log.i(TAG, "completePostingImage: ");
 
-        post.saveEventually(e -> {
-            if (e == null) {
-                Navigation.findNavController(mBinding.getRoot()).navigate(
-                        CompletePostFragmentDirections.actionNavigationCompletePostToNavigationFeed()
-                );
-            } else {
-                Log.e(TAG, "postImage: " + e.getLocalizedMessage(), e);
-            }
-        });
+        if (isConnected()) {
+            post.saveInBackground(e -> {
+                if (e == null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        mProgressBar.setProgress(100, true);
+                    } else {
+                        mProgressBar.setProgress(100);
+                    }
+                    Navigation.findNavController(mBinding.getRoot()).navigate(
+                            CompletePostFragmentDirections.actionNavigationCompletePostToNavigationFeed()
+                    );
+                } else {
+                    Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            });
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 }
