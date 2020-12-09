@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
             // Hide the Bottom Navigation
             if (
                     destination.getId() == R.id.navigation_capture_image ||
-                            destination.getId() == R.id.navigation_complete_post
+                            destination.getId() == R.id.navigation_complete_post ||
+                            destination.getId() == R.id.navigation_image_preview
             ) {
                 mBinding.navView.setVisibility(View.GONE);
             } else {

@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/selected_image_description"
+        android:contentDescription="@string/selected_image_alt"
         android:maxWidth="50dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@id/vertical_guideline"

@@ -19,6 +19,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.databinding.FragmentCaptureImageBinding;
@@ -168,7 +169,9 @@ public class CaptureImageFragment extends Fragment {
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                 Uri savedUri = Uri.fromFile(photoFile);
                 String msg = "Photo capture succeeded: " + savedUri;
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(mBinding.getRoot()).navigate(
+                        CaptureImageFragmentDirections.actionNavigationCaptureImageToNavigationImagePreview(savedUri)
+                );
                 Log.d(TAG, msg);
             }
 

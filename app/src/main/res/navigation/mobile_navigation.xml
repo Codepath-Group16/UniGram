@@ -41,19 +41,39 @@
         android:id="@+id/navigation_capture_image"
         android:name="com.codepath_group16.unigram.ui.post.CaptureImageFragment"
         android:label="@string/title_take_photo"
-        tools:layout="@layout/fragment_capture_image" />
+        tools:layout="@layout/fragment_capture_image">
+        <action
+            android:id="@+id/action_navigation_capture_image_to_navigation_image_preview"
+            app:destination="@id/navigation_image_preview" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_complete_post"
         android:name="com.codepath_group16.unigram.ui.post.CompletePostFragment"
         android:label="@string/title_post"
         tools:layout="@layout/fragment_complete_post">
-        <argument
-            android:name="ImageUri"
-            app:argType="android.net.Uri" />
         <action
             android:id="@+id/action_navigation_complete_post_to_navigation_feed"
             app:destination="@id/navigation_feed" />
+        <argument
+            android:name="ImageUri"
+            app:argType="android.net.Uri" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_image_preview"
+        android:name="com.codepath_group16.unigram.ui.post.ImagePreviewFragment"
+        android:label="@string/title_preview_image"
+        tools:layout="@layout/fragment_image_preview">
+        <action
+            android:id="@+id/action_navigation_image_preview_to_navigation_capture_image"
+            app:destination="@id/navigation_capture_image" />
+        <action
+            android:id="@+id/action_navigation_image_preview_to_navigation_complete_post"
+            app:destination="@id/navigation_complete_post" />
+        <argument
+            android:name="imageUri"
+            app:argType="android.net.Uri" />
     </fragment>
 
 </navigation>
