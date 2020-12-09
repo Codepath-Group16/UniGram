@@ -51,6 +51,9 @@
         <argument
             android:name="ImageUri"
             app:argType="android.net.Uri" />
+        <action
+            android:id="@+id/action_navigation_complete_post_to_navigation_feed"
+            app:destination="@id/navigation_feed" />
     </fragment>
 
 </navigation>
