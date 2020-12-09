@@ -38,7 +38,6 @@ import java.util.Objects;
 
 public class CompletePostFragment extends Fragment {
 
-    private final String TAG = getClass().getSimpleName();
     private FragmentCompletePostBinding mBinding;
     private Uri mImageUri;
     private ProgressBar mProgressBar;
