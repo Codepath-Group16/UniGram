@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +20,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -42,6 +42,7 @@ public class CompletePostFragment extends Fragment {
     private FragmentCompletePostBinding mBinding;
     private Uri mImageUri;
     private ProgressBar mProgressBar;
+    private Group mPosting;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class CompletePostFragment extends Fragment {
         mImageUri = CompletePostFragmentArgs.fromBundle(requireArguments()).getImageUri();
 
         mProgressBar = mBinding.progressBar;
+        mPosting = mBinding.posting;
 
         Glide.with(requireContext())
                 .load(mImageUri)
@@ -81,6 +83,7 @@ public class CompletePostFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_post) {
+            mBinding.getRoot().clearFocus();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 mBinding.getRoot().getWindowInsetsController().hide(WindowInsets.Type.ime());
             } else {
@@ -96,7 +99,7 @@ public class CompletePostFragment extends Fragment {
         Post post = new Post();
         post.setCaption(Objects.requireNonNull(mBinding.captionInput.getEditText()).getText().toString());
 
-        mProgressBar.setVisibility(View.VISIBLE);
+        mPosting.setVisibility(View.VISIBLE);
         byte[] image;
 
         Bitmap bitmap = null;
@@ -117,7 +120,7 @@ public class CompletePostFragment extends Fragment {
                     completePostingImage(post);
                 } else {
                     Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
-                    mProgressBar.setVisibility(View.GONE);
+                    mPosting.setVisibility(View.GONE);
                 }
             }, percentDone -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -127,15 +130,13 @@ public class CompletePostFragment extends Fragment {
                 }
             });
         } else {
-            mProgressBar.setVisibility(View.GONE);
+            mPosting.setVisibility(View.GONE);
             Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
         }
     }
 
     private void completePostingImage(Post post) {
         post.setAuthor(ParseUser.getCurrentUser());
-
-        Log.i(TAG, "completePostingImage: ");
 
         if (isConnected()) {
             post.saveInBackground(e -> {
@@ -150,11 +151,11 @@ public class CompletePostFragment extends Fragment {
                     );
                 } else {
                     Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
-                    mProgressBar.setVisibility(View.GONE);
+                    mPosting.setVisibility(View.GONE);
                 }
             });
         } else {
-            mProgressBar.setVisibility(View.GONE);
+            mPosting.setVisibility(View.GONE);
             Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
         }
     }
