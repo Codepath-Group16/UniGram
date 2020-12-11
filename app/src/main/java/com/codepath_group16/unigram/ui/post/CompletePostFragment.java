@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -89,16 +91,24 @@ public class CompletePostFragment extends Fragment {
                 InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(mBinding.getRoot().getWindowToken(), 0);
             }
-            postImage();
+
+            // Post image in background tasks since it reads image from disk
+            Runnable runnable = this::postImage;
+            new Thread(runnable).start();
+
+
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void postImage() {
+        // Use the handler to update the UI
+        Handler handler = new Handler(Looper.getMainLooper());
         Post post = new Post();
         post.setCaption(Objects.requireNonNull(mBinding.captionInput.getEditText()).getText().toString());
 
-        mPosting.setVisibility(View.VISIBLE);
+        handler.post(() -> mPosting.setVisibility(View.VISIBLE));
+
         byte[] image;
 
         Bitmap bitmap = null;
@@ -119,43 +129,48 @@ public class CompletePostFragment extends Fragment {
                     completePostingImage(post);
                 } else {
                     Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
-                    mPosting.setVisibility(View.GONE);
+                    handler.post(() -> mPosting.setVisibility(View.GONE));
                 }
-            }, percentDone -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    mProgressBar.setProgress(percentDone - 10, true);
-                } else {
-                    mProgressBar.setProgress(percentDone - 10);
-                }
-            });
+            }, percentDone -> setProgressBar(percentDone - 20));
         } else {
-            mPosting.setVisibility(View.GONE);
-            Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
+            handler.post(() -> mPosting.setVisibility(View.GONE));
+            handler.post(() -> Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show());
+        }
+    }
+
+    private void setProgressBar(int i) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            handler.post(() -> mProgressBar.setProgress(i, true));
+        } else {
+            handler.post(() -> mProgressBar.setProgress(i));
         }
     }
 
     private void completePostingImage(Post post) {
         post.setAuthor(ParseUser.getCurrentUser());
 
+        Handler handler = new Handler(Looper.getMainLooper());
+
         if (isConnected()) {
             post.saveInBackground(e -> {
                 if (e == null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        mProgressBar.setProgress(100, true);
-                    } else {
-                        mProgressBar.setProgress(100);
-                    }
+                    setProgressBar(100);
                     Navigation.findNavController(mBinding.getRoot()).navigate(
                             CompletePostFragmentDirections.actionNavigationCompletePostToNavigationFeed()
                     );
                 } else {
-                    Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
-                    mPosting.setVisibility(View.GONE);
+                    handler.post(() -> {
+                        Snackbar.make(mBinding.getRoot(), Objects.requireNonNull(e.getLocalizedMessage()), Snackbar.LENGTH_SHORT).show();
+                        mPosting.setVisibility(View.GONE);
+                    });
                 }
             });
         } else {
-            mPosting.setVisibility(View.GONE);
-            Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
+            handler.post(() -> {
+                mPosting.setVisibility(View.GONE);
+                Snackbar.make(mBinding.getRoot(), R.string.no_connection, Snackbar.LENGTH_SHORT).show();
+            });
         }
     }
 
