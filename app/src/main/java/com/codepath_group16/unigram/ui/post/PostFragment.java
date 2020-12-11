@@ -99,12 +99,19 @@ public class PostFragment extends Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.action_next).setVisible(haveStoragePermission());
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_next) {
             Navigation.findNavController(mBinding.getRoot())
                     .navigate(
                             PostFragmentDirections.actionNavigationPostToNavigationCompletePost(
-                                    mPostViewModel.getSelectedImage().getValue().contentUri
+                                    Objects.requireNonNull(mPostViewModel.getSelectedImage().getValue()).contentUri
                             )
                     );
         }
@@ -118,6 +125,7 @@ public class PostFragment extends Fragment {
         if (requestCode == READ_EXTERNAL_STORAGE_REQUEST) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
+                requireActivity().invalidateOptionsMenu();
                 showImages();
             } else {
                 // If we weren't granted the permission, check to see if we should show
@@ -245,7 +253,7 @@ public class PostFragment extends Fragment {
             switch (viewType) {
                 case OPEN_CAMERA_VIEW_TYPE:
                     View openCameraView = layoutInflater.inflate(R.layout.gallery_open_camera_layout, parent, false);
-                    return new NewImageViewHolder(openCameraView, parent.getContext());
+                    return new NewImageViewHolder(openCameraView);
                 case IMAGE_VIEW_TYPE:
                 default:
                     View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
@@ -329,7 +337,7 @@ public class PostFragment extends Fragment {
  */
 class NewImageViewHolder extends RecyclerView.ViewHolder {
 
-    public NewImageViewHolder(@NonNull View itemView, Context context) {
+    public NewImageViewHolder(@NonNull View itemView) {
         super(itemView);
         MaterialButton btnNewImage = itemView.findViewById(R.id.new_image);
         btnNewImage.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_navigation_post_to_captureImageFragment));
