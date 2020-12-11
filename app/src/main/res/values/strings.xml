@@ -11,6 +11,7 @@
     <string name="title_post">Post</string>
     <string name="title_profile">Profile</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_preview_image">Preview Image</string>
 
     <string name="image_to_post_description">Image to post</string>
     <string name="username">Username</string>
@@ -18,13 +19,22 @@
     <string name="login">Login</string>
     <string name="or">Or</string>
     <string name="sign_up">Sign Up</string>
-    <string name="selected_image_description">Selected image to post description</string>
+    <string name="selected_image_alt">Selected image to post description</string>
     <string name="empty_gallery">Your Gallery is Empty</string>
     <string name="empty_gallery_suggestion">Take a photo to fill your gallery</string>
-    <string name="empty_gallery_icon_description">Empty Gallery Icon</string>
+    <string name="empty_gallery_icon_alt">Empty Gallery</string>
 
     <string name="capture_button_alt">Capture</string>
     <string name="switch_camera_button_alt">Switch camera</string>
     <string name="permission_denied">Permissions not granted by the user.</string>
     <string name="title_take_photo">Take A Photo</string>
+
+    <string name="label_caption">Caption</string>
+
+    <string name="menu_post">Post</string>
+    <string name="menu_next">Next</string>
+    <string name="no_connection">Make sure you have an active internet connection</string>
+    <string name="label_posting">Posting</string>
+
+    <string name="action_retake_picture">Retake picture</string>
 </resources>

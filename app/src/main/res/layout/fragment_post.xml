@@ -71,7 +71,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/emptySelectedImage"
-            android:contentDescription="@string/selected_image_description"
+            android:contentDescription="@string/selected_image_alt"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
@@ -131,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:contentDescription="@string/empty_gallery_icon_description"
+                android:contentDescription="@string/empty_gallery_icon_alt"
                 app:srcCompat="@drawable/ic_photo_album" />
 
             <TextView
