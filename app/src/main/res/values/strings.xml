@@ -37,4 +37,5 @@
     <string name="label_posting">Posting</string>
 
     <string name="action_retake_picture">Retake picture</string>
+    <string name="logout">Logout</string>
 </resources>
