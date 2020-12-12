@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -53,7 +54,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        ProfileViewModel profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        ProfileViewModel profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         setHasOptionsMenu(true);
         mBinding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -116,34 +117,39 @@ public class ProfileFragment extends Fragment {
         @Override
         public Fragment createFragment(int position) {
             // Return a NEW fragment instance in createFragment(int)
-            Fragment fragment = new DemoObjectFragment();
-            Bundle args = new Bundle();
-            // Our object is just an integer :-P
-            args.putInt(DemoObjectFragment.ARG_OBJECT, position + 1);
-            fragment.setArguments(args);
-            return fragment;
+            return new DemoObjectFragment();
         }
 
         @Override
         public int getItemCount() {
-            return 100;
+            return 2;
         }
     }
 
     // Instances of this class are fragments representing a single
 // object in our collection.
     public static class DemoObjectFragment extends Fragment {
-        public static final String ARG_OBJECT = "object";
+
+        private ProfileViewModel mProfileViewModel;
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_complete_post, container, false);
+
+            mProfileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+            return inflater.inflate(R.layout.gallery, container, false);
         }
 
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            ProfileFragment.GalleryAdapter galleryAdapter = new ProfileFragment.GalleryAdapter();
+            RecyclerView gallery = view.findViewById(R.id.gallery);
+            gallery.setAdapter(galleryAdapter);
+
+            gallery.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+            mProfileViewModel.getPosts().observe(requireActivity(), galleryAdapter::submitList);
         }
     }
 
@@ -241,7 +247,7 @@ public class ProfileFragment extends Fragment {
             h.getRootView().setTag(post);
 
             Glide.with(h.getImageView())
-                    .load(post.getImage())
+                    .load(post.getImage().getUrl())
                     .thumbnail(0.33f)
                     .centerCrop()
                     .into(h.getImageView());

@@ -18,11 +18,15 @@ public class ProfileViewModel extends AndroidViewModel {
 
     public static final int QUERY_LIMIT = 20;
     private final String TAG = getClass().getSimpleName();
-    private final MutableLiveData<List<Post>> mPostList = new MutableLiveData<>();
+    private final MutableLiveData<List<Post>> mPosts = new MutableLiveData<>();
 
     public ProfileViewModel(Application application) {
         super(application);
         loadImages();
+    }
+
+    public LiveData<List<Post>> getPosts() {
+        return mPosts;
     }
 
     /**
@@ -37,7 +41,7 @@ public class ProfileViewModel extends AndroidViewModel {
              * thread inside a runnable.
              */
             List<Post> postList = queryPosts();
-            mPostList.postValue(postList);
+            mPosts.postValue(postList);
         };
 
         new Handler(Looper.getMainLooper()).post(runnable);
@@ -47,11 +51,6 @@ public class ProfileViewModel extends AndroidViewModel {
 
     private List<Post> queryPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        if (mPostList.getValue() != null) {
-            Post oldestPost = mPostList.getValue().get(mPostList.getValue().size() - 1);
-            query.whereLessThanOrEqualTo(Post.KEY_CREATED_AT, oldestPost.getCreatedAt());
-            query.whereNotEqualTo(Post.KEY_AUTHOR, oldestPost.getAuthor().getObjectId());
-        }
 
         query.include(Post.KEY_AUTHOR);
         query.include(Post.KEY_LIKED_BY);
