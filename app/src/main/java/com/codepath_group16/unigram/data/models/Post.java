@@ -1,5 +1,8 @@
 package com.codepath_group16.unigram.data.models;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -15,10 +18,35 @@ public class Post extends ParseObject {
     public static final String KEY_AUTHOR = "author";
     public static final String KEY_LIKES_COUNT = "likesCount";
 
-    private final String TAG = getClass().getSimpleName();
+    public final static DiffUtil.ItemCallback<Post> DiffCallback = new DiffUtil.ItemCallback<Post>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Post oldItem, @NonNull Post newItem) {
+            // User properties may have changed if reloaded from the DB, but ID is fixed
+            return oldItem.getObjectId().equals(newItem.getObjectId());
+        }
 
+        @Override
+        public boolean areContentsTheSame(@NonNull Post oldItem, @NonNull Post newItem) {
+            // NOTE: if you use equals, your object must properly override Object#equals()
+            // Incorrectly returning false here will result in too many animations.
+            return newItem.equals(oldItem);
+        }
+    };
     // By default, a post is not liked by the user
     private boolean isLiked = false;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        Post post = (Post) obj;
+
+        return this.getObjectId().equals(post.getObjectId()) && this.getCaption().equals(post.getCaption());
+    }
 
     public String getCaption() {
         return getString(KEY_CAPTION);

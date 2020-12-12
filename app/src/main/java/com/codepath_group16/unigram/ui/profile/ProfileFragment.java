@@ -19,7 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -27,6 +30,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.codepath_group16.unigram.R;
+import com.codepath_group16.unigram.data.models.Post;
 import com.codepath_group16.unigram.databinding.FragmentProfileBinding;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -45,6 +49,9 @@ public class ProfileFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        mProfileViewModel =
+                new ViewModelProvider(this).get(ProfileViewModel.class);
 
         setHasOptionsMenu(true);
         mBinding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -150,6 +157,63 @@ public class ProfileFragment extends Fragment {
         );
 
         requireActivity().finish();
+    }
+
+    /**
+     * A {@link ListAdapter for {@link Post }s.
+     */
+    private static class GalleryAdapter extends ListAdapter<Post, RecyclerView.ViewHolder> {
+
+        protected GalleryAdapter() {
+            super(Post.DiffCallback);
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            View view = layoutInflater.inflate(R.layout.gallery_layout, parent, false);
+            return new ImageViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+            Post post = getItem(position);
+            ProfileFragment.GalleryAdapter.ImageViewHolder h = (ProfileFragment.GalleryAdapter.ImageViewHolder) holder;
+            h.getRootView().setTag(post);
+
+            Glide.with(h.getImageView())
+                    .load(post.getImage())
+                    .thumbnail(0.33f)
+                    .centerCrop()
+                    .into(h.getImageView());
+
+        }
+
+        /**
+         * Basic {@link RecyclerView.ViewHolder} for our gallery.
+         */
+        static class ImageViewHolder extends RecyclerView.ViewHolder {
+
+            View mRootView;
+            ImageView mImageView;
+
+            public ImageViewHolder(@NonNull View itemView) {
+                super(itemView);
+                mRootView = itemView;
+                mImageView = Objects.requireNonNull(itemView).findViewById(R.id.image);
+            }
+
+            public ImageView getImageView() {
+                return mImageView;
+            }
+
+            public View getRootView() {
+                return mRootView;
+            }
+
+        }
     }
 
 }
