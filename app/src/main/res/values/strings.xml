@@ -44,4 +44,5 @@
     <string name="followers">followers</string>
     <string name="following">following</string>
     <string name="logout">Logout</string>
+    <string name="log_out">Log out</string>
 </resources>

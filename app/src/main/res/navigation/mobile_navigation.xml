@@ -31,11 +31,11 @@
             app:destination="@id/navigation_complete_post" />
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.codepath_group16.unigram.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.codepath_group16.unigram.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
 
     <fragment
         android:id="@+id/navigation_capture_image"
@@ -76,6 +76,15 @@
         <argument
             android:name="imageUri"
             app:argType="android.net.Uri" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.codepath_group16.unigram.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_navigation_profile_to_loginActivity"
+            app:destination="@id/loginActivity" />
     </fragment>
 
 </navigation>

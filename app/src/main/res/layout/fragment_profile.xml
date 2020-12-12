@@ -174,10 +174,8 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/profile_topAppBar"
-                style="@style/Widget.MaterialComponents.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="top"
                 android:elevation="0dp" />
 
             <com.google.android.material.tabs.TabLayout
