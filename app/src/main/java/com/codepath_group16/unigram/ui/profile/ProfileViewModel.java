@@ -13,13 +13,12 @@ import com.codepath_group16.unigram.data.models.Post;
 import com.parse.ParseQuery;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ProfileViewModel extends AndroidViewModel {
 
     public static final int QUERY_LIMIT = 20;
     private final String TAG = getClass().getSimpleName();
-    private MutableLiveData<List<Post>> mPostList;
+    private final MutableLiveData<List<Post>> mPostList = new MutableLiveData<>();
 
     public ProfileViewModel(Application application) {
         super(application);
@@ -48,7 +47,7 @@ public class ProfileViewModel extends AndroidViewModel {
 
     private List<Post> queryPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        if (Objects.requireNonNull(mPostList.getValue()).size() > 0) {
+        if (mPostList.getValue() != null) {
             Post oldestPost = mPostList.getValue().get(mPostList.getValue().size() - 1);
             query.whereLessThanOrEqualTo(Post.KEY_CREATED_AT, oldestPost.getCreatedAt());
             query.whereNotEqualTo(Post.KEY_AUTHOR, oldestPost.getAuthor().getObjectId());

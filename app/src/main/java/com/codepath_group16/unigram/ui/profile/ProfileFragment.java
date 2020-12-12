@@ -23,6 +23,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -32,6 +34,8 @@ import com.bumptech.glide.request.target.Target;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.data.models.Post;
 import com.codepath_group16.unigram.databinding.FragmentProfileBinding;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
@@ -40,7 +44,6 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     private final String TAG = getClass().getSimpleName();
-    private ProfileViewModel mProfileViewModel;
     private FragmentProfileBinding mBinding;
     private ParseUser mCurrentUser;
     private TextView mTvBio;
@@ -50,8 +53,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        mProfileViewModel =
-                new ViewModelProvider(this).get(ProfileViewModel.class);
+        ProfileViewModel profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         setHasOptionsMenu(true);
         mBinding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -71,6 +73,21 @@ public class ProfileFragment extends Fragment {
         ActionBar actionBar = Objects.requireNonNull(activity.getSupportActionBar());
         actionBar.setTitle(ParseUser.getCurrentUser().getUsername());
 
+        // find views by id
+        ViewPager2 viewPager = mBinding.viewPager;
+        TabLayout tabLayout = mBinding.tabLayout;
+
+        DemoCollectionAdapter demoCollectionAdapter;
+        demoCollectionAdapter = new DemoCollectionAdapter(this);
+
+        // set adapter on viewpager
+        viewPager.setAdapter(demoCollectionAdapter);
+
+        // attach tablayout with viewpager
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText("OBJECT " + (position + 1))
+        ).attach();
+
 
         mTvBio = mBinding.tvBio;
         mIvProfile = mBinding.ivProfile;
@@ -88,6 +105,46 @@ public class ProfileFragment extends Fragment {
 
         showDefaultProfile();
         updateUserData();
+    }
+
+    public static class DemoCollectionAdapter extends FragmentStateAdapter {
+        public DemoCollectionAdapter(Fragment fragment) {
+            super(fragment);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            // Return a NEW fragment instance in createFragment(int)
+            Fragment fragment = new DemoObjectFragment();
+            Bundle args = new Bundle();
+            // Our object is just an integer :-P
+            args.putInt(DemoObjectFragment.ARG_OBJECT, position + 1);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getItemCount() {
+            return 100;
+        }
+    }
+
+    // Instances of this class are fragments representing a single
+// object in our collection.
+    public static class DemoObjectFragment extends Fragment {
+        public static final String ARG_OBJECT = "object";
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_complete_post, container, false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        }
     }
 
     private void updateUserData() {
