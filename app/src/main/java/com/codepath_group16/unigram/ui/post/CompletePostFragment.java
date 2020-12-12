@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -56,6 +57,11 @@ public class CompletePostFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mBinding = FragmentCompletePostBinding.inflate(inflater, container, false);
+
+        AppCompatActivity activity = ((AppCompatActivity) requireActivity());
+
+        activity.setSupportActionBar(mBinding.materialToolbar);
+        Objects.requireNonNull(activity.getSupportActionBar()).setTitle(R.string.title_post);
 
         return mBinding.getRoot();
     }

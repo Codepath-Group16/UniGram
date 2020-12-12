@@ -12,12 +12,15 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.codepath_group16.unigram.R;
 import com.codepath_group16.unigram.databinding.FragmentImagePreviewBinding;
+
+import java.util.Objects;
 
 
 public class ImagePreviewFragment extends Fragment {
@@ -45,6 +48,12 @@ public class ImagePreviewFragment extends Fragment {
         mBinding.retakePictureButton.setOnClickListener(v -> Navigation.findNavController(mBinding.getRoot()).navigate(
                 ImagePreviewFragmentDirections.actionNavigationImagePreviewToNavigationCaptureImage()
         ));
+
+        AppCompatActivity activity = ((AppCompatActivity) requireActivity());
+
+        activity.setSupportActionBar(mBinding.materialToolbar);
+        Objects.requireNonNull(activity.getSupportActionBar()).setTitle(R.string.title_post);
+
         return mBinding.getRoot();
     }
 

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
@@ -88,6 +89,11 @@ public class PostFragment extends Fragment {
         } else {
             showImages();
         }
+
+        AppCompatActivity activity = ((AppCompatActivity) requireActivity());
+
+        activity.setSupportActionBar(mBinding.materialToolbar);
+        Objects.requireNonNull(activity.getSupportActionBar()).setTitle(R.string.title_post);
 
         return mBinding.getRoot();
     }
