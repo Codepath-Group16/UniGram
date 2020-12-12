@@ -44,7 +44,8 @@
         tools:layout="@layout/fragment_capture_image">
         <action
             android:id="@+id/action_navigation_capture_image_to_navigation_image_preview"
-            app:destination="@id/navigation_image_preview" />
+            app:destination="@id/navigation_image_preview"
+            app:popUpTo="@id/navigation_capture_image" />
     </fragment>
 
     <fragment
@@ -67,7 +68,8 @@
         tools:layout="@layout/fragment_image_preview">
         <action
             android:id="@+id/action_navigation_image_preview_to_navigation_capture_image"
-            app:destination="@id/navigation_capture_image" />
+            app:destination="@id/navigation_capture_image"
+            app:popUpTo="@id/navigation_post" />
         <action
             android:id="@+id/action_navigation_image_preview_to_navigation_complete_post"
             app:destination="@id/navigation_complete_post" />
