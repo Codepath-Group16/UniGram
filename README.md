@@ -137,6 +137,9 @@ Optional:
    | ------------- | -------- | ------------|
    | adminId      | String   | unique id for the school |
    | userId       | String   | unique id for a user |
+   
+   
+   
 
 
    
